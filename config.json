@@ -5,5 +5,6 @@
     "boxId": 300,
     "companyId": 7,
     "keepAliveTime": 10000,
-    "sendTimes2ServerTime": 15000
+    "sendTimes2ServerTime": 15000,
+    "getRaceMapDataTime": 15000
 }

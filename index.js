@@ -18,7 +18,8 @@ var config = {
     'boxId': 123,
     'companyId': 7,
     'keepAliveTime': 60000,
-    'sendTimes2ServerTime': 15000
+    'sendTimes2ServerTime': 15000,
+    'getRaceMapDataTime': 15000
 };
 
 // load config file
@@ -64,6 +65,12 @@ async function getRaceMapTimes(eventId)
 
 
 async function saveRaceMapTimes(respData){
+
+    if (respData == undefined)
+    {
+        console.log("ERROR: no data in saveRaceMapTimes");
+        return;
+    }
 
     // iterate over timekeeping points and create boxid
     await _.forEach(respData.timekeepings, function(timeKeepingPoint, key){
@@ -151,12 +158,12 @@ async function calcTimeInterpolated(times, callback)
 }
 
 
-async function getRaceMapData(eventId)
+async function getRaceMapData()
 {
-    console.log('TICK: GetRaceMapData');
+    console.log('GetRaceMapData for ' + config.eventId);
 
     // get new data
-    const respData = await getRaceMapTimes(eventId);
+    var respData = await getRaceMapTimes(config.eventId);
 
     // save to json file and write file
     await saveRaceMapTimes(respData);
@@ -166,9 +173,8 @@ async function getRaceMapData(eventId)
 
 
 // get new times and save to db file
+setInterval(getRaceMapData, config.getRaceMapDataTime);
 getRaceMapData(config.eventId);
-
-
 
 
 // bbt keep alive
