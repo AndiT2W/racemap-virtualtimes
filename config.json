@@ -1,0 +1,9 @@
+{
+    "updateRaceMapTimes": 10000,
+    "eventId": "60a3b443f096f800018add7c",
+    "apiSecretKey": "56b4508a355779c94e4e1a590fc607fb",
+    "boxId": 300,
+    "companyId": 7,
+    "keepAliveTime": 10000,
+    "sendTimes2ServerTime": 15000
+}
