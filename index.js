@@ -227,6 +227,7 @@ async function sendTimes2Server()
                 if (retVal)
                 {
                     sendElem.send2Server = true;
+                    console.log("SUCCESSFULL SEND " + startNumber);
                 }
                 ii += 1;
             } else {
