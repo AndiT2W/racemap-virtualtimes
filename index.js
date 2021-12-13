@@ -291,9 +291,6 @@ async function sendTimes2Server()
             // check if we have times we should send
             var sendElem = _.find(db.data.t2wtimes, {'send2Server': false});     
 
-            //console.log(sendElem);
-
-            
             // check if we found some new elements
             if (sendElem != undefined)
             {
