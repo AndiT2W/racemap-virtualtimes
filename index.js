@@ -41,6 +41,26 @@ await db.read();
 
 
 
+// get new times and save to db file
+setInterval(getRaceMapData, config.getRaceMapDataTime);
+getRaceMapData(config.eventId);
+
+
+
+setInterval(sendBbtKeepAlive, config.keepAliveTime);
+sendBbtKeepAlive();
+
+
+setInterval(sendTimes2Server, config.sendTimes2ServerTime);
+sendTimes2Server();
+
+
+
+
+/*
+* Get times from RaceMap Api
+*
+*/
 async function getRaceMapTimes(eventId)
 {
     if (eventId == null)
@@ -98,7 +118,7 @@ async function saveRaceMapTimes(respData){
         _.forEach(starter.times, function(timeArray, timeKeepingId, times){
 
             // calc interpolated time from gps points
-            calcTimeInterpolated(timeArray, function(filteredTimeArray){
+            filterTimes(timeArray, function(filteredTimeArray){
                 
                 _.forEach(filteredTimeArray, function(value, key){
 
@@ -135,32 +155,19 @@ async function saveRaceMapTimes(respData){
                     } else {
                         //console.log('no timing points -> '); console.log(starter);
                     }
-
-
                 });
-
-
-
-
-
-
-            });
-
-            
+            });            
         });
-
     });
    
     // write file
     await db.write();
 }
 
-
-
-
-
-
-async function calcTimeInterpolated(times, callback)
+/*
+* filter times for FS, Bs, LS
+*/
+async function filterTimes(times, callback)
 {
     //console.log(times);
     var filteredTimesBS = [];
@@ -236,6 +243,9 @@ async function calcTimeInterpolated(times, callback)
 }
 
 
+/*
+* get data and save new ones into db
+*/
 async function getRaceMapData()
 {
     console.log('GetRaceMapData for ' + config.eventId);
@@ -250,21 +260,12 @@ async function getRaceMapData()
 }
 
 
-// get new times and save to db file
-setInterval(getRaceMapData, config.getRaceMapDataTime);
-getRaceMapData(config.eventId);
 
 
 
-setInterval(sendBbtKeepAlive, config.keepAliveTime);
-sendBbtKeepAlive();
-
-
-setInterval(sendTimes2Server, config.sendTimes2ServerTime);
-sendTimes2Server();
-
-
-// bbt keep alive
+/*
+* send keep alive for all splits/boxes
+*/
 async function sendBbtKeepAlive()
 {
     if (db.data != null)
@@ -277,7 +278,9 @@ async function sendBbtKeepAlive()
     }
 }
 
-
+/*
+* check if there are new times and send to server
+*/
 async function sendTimes2Server()
 {
     if(_.has(db.data, 't2wtimes'))
@@ -341,7 +344,7 @@ async function bbtSendKeepAlive(boxId, companyId, secretKey, status)
         BoxId: boxId.toString(),
         CompanyId: companyId.toString(),
         Status: status,
-        RandomNum: getRandomInt(1,65535),
+        RandomNum: bbtGetRandomInt(1,65535),
         //Hash: "13884997006406926136"
         Hash: ""
     };
@@ -376,7 +379,7 @@ async function bbtSendRawTime(boxId, companyId, secretKey, rawTime)
     var msg = {
         BoxId: boxId.toString(),
 	    CompanyId: companyId.toString(),
-	    RandomNum: getRandomInt(1,65535),
+	    RandomNum: bbtGetRandomInt(1,65535),
         RawTimes: rawTime
 	    //RawTimes: ["event.tag.arrive tag_id=0x300833B2DDD9014000000000, first=2019-10-22T10:10:00.359, rssi=-700",
         //           "event.tag.depart tag_id=0x300833B2DDD9014000000000, last=2019-10-22T10:10:02.276"]
@@ -435,7 +438,7 @@ function bbtCalcHash(msg)
 }
 
 
-function getRandomInt(min, max) {
+function bbtGetRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
