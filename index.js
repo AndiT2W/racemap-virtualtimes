@@ -19,7 +19,8 @@ var config = {
     'companyId': 7,
     'keepAliveTime': 60000,
     'sendTimes2ServerTime': 15000,
-    'getRaceMapDataTime': 15000
+    'getRaceMapDataTime': 15000,
+    'filterTime': 120
 };
 
 // load config file
@@ -97,39 +98,52 @@ async function saveRaceMapTimes(respData){
         _.forEach(starter.times, function(timeArray, timeKeepingId, times){
 
             // calc interpolated time from gps points
-            calcTimeInterpolated(timeArray, function(timeInter){
+            calcTimeInterpolated(timeArray, function(filteredTimeArray){
                 
-                if (timeInter != null)
-                {                    
-                    var timeObj = {};
-                    timeObj.startNumber = starter.startNumber;
-                    timeObj.timeKeepingId = timeKeepingId;
-                    timeObj.timeMs = timeInter.timeMs;
-                    timeObj.distanceToSplit = timeInter.distanceToSplit;
-                    timeObj.time = timeInter.time;
+                _.forEach(filteredTimeArray, function(value, key){
 
-                    var findElem = _.find(db.data.timekeepings, {'id': timeKeepingId});
-
-                    if (findElem == undefined)
-                    {
-                        console.log('ERROR: found no boxId for timekeeping Id:' + timeKeepingId);
-                    } else {                    
-                        timeObj.boxId = findElem.boxId;
-                        
-                        // search item
-                        var index = _.findIndex(db.data.t2wtimes, timeObj);                    
-
-                        if (index == -1)
+                    if (value != null)
+                    {                    
+                        var timeObj = {};
+                        timeObj.startNumber = starter.startNumber;
+                        timeObj.timeKeepingId = timeKeepingId;
+                        timeObj.timeMs = value.timeMs;
+                        timeObj.distanceToSplit = value.distanceToSplit;
+                        timeObj.time = value.time;
+                        timeObj.type = value.type;
+    
+                        // look if we have for the hash timekeeping point a box id
+                        var findElem = _.find(db.data.timekeepings, {'id': timeKeepingId});
+    
+                        if (findElem == undefined)
                         {
-                            // flag if we send the data to t2w server successfully
-                            timeObj.send2Server = false;
-                            // add to db
-                            db.data.t2wtimes.push(timeObj);
+                            console.log('ERROR: found no boxId for timekeeping Id:' + timeKeepingId);
+                        } else {                    
+                            timeObj.boxId = findElem.boxId;
+                            
+                            // search item
+                            var index = _.findIndex(db.data.t2wtimes, timeObj);                    
+    
+                            if (index == -1)
+                            {
+                                // flag if we send the data to t2w server successfully
+                                timeObj.send2Server = false;
+                                // add to db
+                                db.data.t2wtimes.push(timeObj);
+                            }
                         }
+                    } else {
+                        //console.log('no timing points -> '); console.log(starter);
                     }
-                } else {
-                    //console.log('no timing points -> '); console.log(starter);
-                }
+
+
+                });
+
+
+
+
+
+
             });
 
             
@@ -149,12 +163,76 @@ async function saveRaceMapTimes(respData){
 async function calcTimeInterpolated(times, callback)
 {
     //console.log(times);
+    var filteredTimesBS = [];
+    var filteredTimesFS = [];
+    var filteredTimesLS = [];
+    var lastTime = 0;
+    
+    if (times != null)
+    {
+        for (var ii=0; ii < times.length; ii++)
+        {
+            // calculate time in milliseconds from some date
+            times[ii].timeMs = new Date(times[ii].time).valueOf();
 
-    await _.forEach(times, function(value){
-        value.timeMs = new Date(value.time).valueOf();
-    });
+            if (ii==0)
+            {
+                filteredTimesBS.push(Object.assign({}, times[ii]));
+                filteredTimesFS.push(Object.assign({}, times[ii]));
+                filteredTimesLS.push(Object.assign({}, times[ii]));
+                //lastTime = times[ii].timeMs;
+            } else {
 
-      callback(_.head(times));
+                // check if it is within the filter time
+                if (Math.abs(lastTime - times[ii].timeMs) < (config.filterTime*1000)) // -> is within the filter time
+                {
+                    // check if position is less then the current one
+                    if (times[ii].distanceToSplit < _.last(filteredTimesBS).distanceToSplit)
+                    {
+                        // save new best seen 
+                        filteredTimesBS[filteredTimesBS.length-1] = Object.assign({}, times[ii]);     
+                    }
+                    filteredTimesLS[filteredTimesLS.length-1] = Object.assign({}, times[ii]);
+
+                } else {
+                    // not in filter time
+                    filteredTimesBS.push(Object.assign({}, times[ii]));
+                    filteredTimesFS.push(Object.assign({}, times[ii]));
+                    filteredTimesLS.push(Object.assign({}, times[ii]));
+                }
+
+            }
+
+            lastTime = times[ii].timeMs;
+
+        }
+
+    }
+
+    var filteredTimes = [];
+
+    for (var kk=0; kk<filteredTimesBS.length; kk++){
+        
+
+        filteredTimes.push(filteredTimesBS[kk]);
+
+        _.last(filteredTimes).type = 'BS';
+    }
+    for (var ll=0; ll<filteredTimesFS.length; ll++){
+       
+
+        filteredTimes.push(filteredTimesFS[ll]);
+
+        _.last(filteredTimes).type = 'FS';
+    }
+    for (var nn=0; nn<filteredTimesLS.length; nn++){
+       
+        filteredTimes.push(filteredTimesLS[nn]);
+
+        _.last(filteredTimes).type = 'LS';
+    }
+
+    callback(filteredTimes);
 }
 
 
@@ -177,23 +255,27 @@ setInterval(getRaceMapData, config.getRaceMapDataTime);
 getRaceMapData(config.eventId);
 
 
-// bbt keep alive
-function sendBbtKeepAlive()
-{    
-    bbtSendKeepAlive(config.boxId, config.companyId, config.apiSecretKey, "");
-    //bbtSendRawTime(config.boxId, config.companyId, config.apiSecretKey);
-}
 
 setInterval(sendBbtKeepAlive, config.keepAliveTime);
 sendBbtKeepAlive();
-//bbtSendRawTime(config.boxId, config.companyId, config.apiSecretKey);
-
 
 
 setInterval(sendTimes2Server, config.sendTimes2ServerTime);
 sendTimes2Server();
 
 
+// bbt keep alive
+async function sendBbtKeepAlive()
+{
+    if (db.data != null)
+    {
+        // send for all boxes the keep alive signal
+        _.forEach(db.data.timekeepings, function(value, key){
+            bbtSendKeepAlive(value.boxId, config.companyId, config.apiSecretKey, "");
+        });   
+        //bbtSendRawTime(config.boxId, config.companyId, config.apiSecretKey);
+    }
+}
 
 
 async function sendTimes2Server()
@@ -212,22 +294,29 @@ async function sendTimes2Server()
             // check if we found some new elements
             if (sendElem != undefined)
             {
-                var sendRawTime = "event.tag.arrive tag_id=0x"; //300833B2DDD9014000000000, first=2019-10-22T10:10:00.359, rssi=-700",
-
                 var startNumber = "000000000000000000000000" + sendElem.startNumber.toString();
                 startNumber = startNumber.substring(startNumber.length - 24);
                 
+                var sendRawTime = "event.tag.";
 
-                sendRawTime = sendRawTime + startNumber + ', first=' + sendElem.time.substring(0, sendElem.time.length-1);
-
-                //console.log(sendRawTime);
-
+                if (sendElem.type == 'FS')
+                {
+                    sendRawTime += "arrive tag_id=0x" + startNumber + ', first=' + sendElem.time.substring(0, sendElem.time.length-1);
+                } else if (sendElem.type == 'BS') {
+                    sendRawTime += "best tag_id=0x" + startNumber + ', best=' + sendElem.time.substring(0, sendElem.time.length-1);
+                } else if (sendElem.type == 'LS') {
+                    sendRawTime += "depart tag_id=0x" + startNumber + ', last=' + sendElem.time.substring(0, sendElem.time.length-1);
+                } else {
+                    console.log("ERROR: wrong type. have to be FS,LS,BS");
+                    break;
+                }
+                
                 var retVal = await bbtSendRawTime(sendElem.boxId, config.companyId, config.apiSecretKey, [sendRawTime]);
 
                 if (retVal)
                 {
                     sendElem.send2Server = true;
-                    console.log("SUCCESSFULL SEND " + startNumber);
+                    //console.log("SUCCESSFULL SEND " + startNumber);
                 }
                 ii += 1;
             } else {
