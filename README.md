@@ -8,6 +8,9 @@ All the data will be stored in a json-database file. This file can be viewed als
 
 - change raceMapEventId in config.js
 - change boxId in config.js (if needed, standard starts @ 300)
+- start script: 
+  - npm start
+  - node index.js
     
 
 
@@ -17,7 +20,7 @@ All the data will be stored in a json-database file. This file can be viewed als
 
 - setup MEAN instance
 - clone repo: git clone https://gitlab.com/t21000/racemap/racemapvirtualtimes.git
-- 
+
 
 ```
 cd existing_repo
