@@ -13,10 +13,10 @@ console.log(__dirname);
 
 var config = {
     'updateRaceMapTimes': 10000,
-    'eventId': '60a3b443f096f800018add7c',
-    'apiSecretKey': '56b4508a355779c94e4e1a590fc607fb',
+    'raceMapEventId': '60a3b443f096f800018add7c',
+    't2wApiSecretKey': '56b4508a355779c94e4e1a590fc607fb',
     'boxId': 123,
-    'companyId': 7,
+    't2wCompanyId': 7,
     'keepAliveTime': 60000,
     'sendTimes2ServerTime': 15000,
     'getRaceMapDataTime': 15000,
@@ -34,7 +34,7 @@ if (dbConfig.data != null)
 }
 
 // Use JSON file for storage
-const db = new Low(new JSONFile(join(__dirname, '\data', config.eventId+'.json')));
+const db = new Low(new JSONFile(join(__dirname, '\data', config.raceMapEventId+'.json')));
 
 // Read data from JSON file, this will set db.data content
 await db.read();
@@ -43,7 +43,7 @@ await db.read();
 
 // get new times and save to db file
 setInterval(getRaceMapData, config.getRaceMapDataTime);
-getRaceMapData(config.eventId);
+getRaceMapData();
 
 
 
@@ -248,10 +248,10 @@ async function filterTimes(times, callback)
 */
 async function getRaceMapData()
 {
-    console.log('GetRaceMapData for ' + config.eventId);
+    console.log('GetRaceMapData for ' + config.raceMapEventId);
 
     // get new data
-    var respData = await getRaceMapTimes(config.eventId);
+    var respData = await getRaceMapTimes(config.raceMapEventId);
 
     // save to json file and write file
     await saveRaceMapTimes(respData);
@@ -272,7 +272,7 @@ async function sendBbtKeepAlive()
     {
         // send for all boxes the keep alive signal
         _.forEach(db.data.timekeepings, function(value, key){
-            bbtSendKeepAlive(value.boxId, config.companyId, config.apiSecretKey, "");
+            bbtSendKeepAlive(value.boxId, config.t2wCompanyId, config.t2wApiSecretKey, "");
         });   
         //bbtSendRawTime(config.boxId, config.companyId, config.apiSecretKey);
     }
@@ -316,7 +316,7 @@ async function sendTimes2Server()
                     break;
                 }
                 
-                var retVal = await bbtSendRawTime(sendElem.boxId, config.companyId, config.apiSecretKey, [sendRawTime]);
+                var retVal = await bbtSendRawTime(sendElem.boxId, config.t2wCompanyId, config.t2wApiSecretKey, [sendRawTime]);
 
                 if (retVal)
                 {

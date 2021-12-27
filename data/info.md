@@ -1,1 +1,0 @@
-database files for different events (in json format) 
