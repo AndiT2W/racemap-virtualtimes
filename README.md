@@ -14,8 +14,6 @@ All the data will be stored in a json-database file. This file can be viewed als
     
 
 
-
-
 ## How to setup server on AWS
 
 - setup MEAN instance
@@ -29,10 +27,36 @@ git branch -M main
 git push -uf origin main
 ```
 
-## PM2 autostart
+### PM2 configuration
 
-- sudo npm install pm2 -g
+pm2 watch doesn't work because of database file. The files are changing every time and then it will do a restart.
+Now linked with andi00085@gmail.com
 
+```
+sudo npm install pm2 -g
+pm2 link 60iry6zdtx71fbd 304eo8q7z3pzyew
+pm2 startup
+sudo env PATH=$PATH:/opt/bitnami/node/bin /opt/bitnami/node/lib/node_modules/pm2/bin/pm2 startup systemd -u bitnami --hp /home/bitnami
+pm2 start index.js --name racemapvirtualtimes 
+pm2 save
+```
+
+#### PM2 commands
+
+- show detailed information
+```
+pm2 monit
+```
+
+- show listed information
+```
+pm2 list
+```
+
+- delete application
+```
+pm2 delete racemapvirtualtimes
+```
 
 
 ## Racemap test event
