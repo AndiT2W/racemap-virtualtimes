@@ -285,6 +285,11 @@ async function sendTimes2Server()
 {
     if(_.has(db.data, 't2wtimes'))
     {
+        var nrSendTimes = _.size(_.filter(db.data.t2wtimes, {'send2Server': false}));
+        var allTimes    = _.size(db.data.t2wtimes);
+
+        console.log('Send times to server: ' + nrSendTimes +" / " + allTimes);
+
         var ii=0;
         while (ii < 100) {          
 
@@ -360,7 +365,7 @@ async function bbtSendKeepAlive(boxId, companyId, secretKey, status)
 
     if (responseData.StatusCode == 0)
     {
-        console.log('KeepAlive OK');
+        console.log('KeepAlive OK BoxId: ' + boxId);
     } else {
         console.log('KeepAlive ERROR');
         console.log(msg);
