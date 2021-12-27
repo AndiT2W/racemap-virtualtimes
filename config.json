@@ -3,7 +3,7 @@
     "raceMapEventId": "5f464290d3e5d7000123ab2a",
     "t2wApiSecretKey": "56b4508a355779c94e4e1a590fc607fb",
     "t2wCompanyId": 7,
-    "boxId": 300,   
+    "boxId": 400,   
     "keepAliveTime": 10000,
     "sendTimes2ServerTime": 15000,
     "getRaceMapDataTime": 15000,
