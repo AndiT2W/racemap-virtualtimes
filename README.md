@@ -29,6 +29,10 @@ git branch -M main
 git push -uf origin main
 ```
 
+## PM2 autostart
+
+- sudo npm install pm2 -g
+
 
 
 ## Racemap test event
