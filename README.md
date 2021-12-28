@@ -30,11 +30,11 @@ git push -uf origin main
 ### PM2 configuration
 
 pm2 watch doesn't work because of database file. The files are changing every time and then it will do a restart.
-Now linked with andi00085@gmail.com
+Now linked with info@time2win.at (user: time2win)
 
 ```
 sudo npm install pm2 -g
-pm2 link 60iry6zdtx71fbd 304eo8q7z3pzyew
+pm2 link i5i6v9l1hp48kfb xniecv673yot2x4
 pm2 startup
 sudo env PATH=$PATH:/opt/bitnami/node/bin /opt/bitnami/node/lib/node_modules/pm2/bin/pm2 startup systemd -u bitnami --hp /home/bitnami
 pm2 start index.js --name racemapvirtualtimes 

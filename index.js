@@ -272,6 +272,7 @@ async function sendBbtKeepAlive()
     {
         // send for all boxes the keep alive signal
         _.forEach(db.data.timekeepings, function(value, key){
+            console.log("Splitname: " + value.name + " -> BoxId: " + value.boxId);
             bbtSendKeepAlive(value.boxId, config.t2wCompanyId, config.t2wApiSecretKey, "");
         });   
         //bbtSendRawTime(config.boxId, config.companyId, config.apiSecretKey);
