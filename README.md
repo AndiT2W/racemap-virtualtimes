@@ -58,6 +58,12 @@ pm2 list
 pm2 delete racemapvirtualtimes
 ```
 
+## Copy database file to s3
+
+```
+aws s3api put-object --bucket t2w-racemap-bucket --key data/5f464290d3e5d7000123ab2a.json --body /home/bitnami/racemapvirtualtimes/data/5f464290d3e5d7000123ab2a.json
+```
+
 
 ## Racemap test event
 

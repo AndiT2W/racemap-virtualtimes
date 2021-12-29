@@ -50,9 +50,11 @@ getRaceMapData();
 setInterval(sendBbtKeepAlive, config.keepAliveTime);
 sendBbtKeepAlive();
 
-
-setInterval(sendTimes2Server, config.sendTimes2ServerTime);
-sendTimes2Server();
+if (config.sendTimes2Server == 1)
+{
+    setInterval(sendTimes2Server, config.sendTimes2ServerTime);
+    sendTimes2Server();
+}
 
 
 
