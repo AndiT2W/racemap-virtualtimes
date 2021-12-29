@@ -58,7 +58,15 @@ pm2 list
 pm2 delete racemapvirtualtimes
 ```
 
-## Copy database file to s3
+## Copy database file to s3-bucket (lightsail)
+
+we created a lightsail bucket for sharing/debugging database files. The name of the bucket is:
+
+```
+t2w-racemap-bucket
+```
+
+In the data-folder is also a shell scirpt which will copy all the json files to s3 bucket. Afterwards you have to set the permissions in the lightsail console to be accessable for everyone. After this you can edit the datasource in dataServer.xslx in you can debug the data.
 
 ```
 aws s3api put-object --bucket t2w-racemap-bucket --key data/5f464290d3e5d7000123ab2a.json --body /home/bitnami/racemapvirtualtimes/data/5f464290d3e5d7000123ab2a.json

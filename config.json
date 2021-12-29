@@ -8,5 +8,6 @@
     "sendTimes2ServerTime": 15000,
     "sendTimes2Server": 1, 
     "getRaceMapDataTime": 15000,
-    "filterTime": 120
+    "filterTime": 120,
+    "addSeconds2Time": 3600
 }

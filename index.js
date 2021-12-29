@@ -183,6 +183,8 @@ async function filterTimes(times, callback)
         {
             // calculate time in milliseconds from some date
             times[ii].timeMs = new Date(times[ii].time).valueOf();
+            times[ii].timeMs = times[ii].timeMs + (config.addSeconds2Time *1000);
+            times[ii].time   = new Date(times[ii].timeMs).toISOString();
 
             if (ii==0)
             {
