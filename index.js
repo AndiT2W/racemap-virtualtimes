@@ -120,9 +120,9 @@ async function saveRaceMapTimes(respData){
         _.forEach(starter.times, function(timeArray, timeKeepingId, times){
 
             // calc interpolated time from gps points
-            filterTimes(timeArray, function(filteredTimeArray){
+            filterTimes(timeArray, async function(filteredTimeArray){
                 
-                _.forEach(filteredTimeArray, async function(value, key){
+                await _.forEach(filteredTimeArray, async function(value, key){
 
                     if (value != null)
                     {                    
@@ -161,17 +161,17 @@ async function saveRaceMapTimes(respData){
                                     switch(timeObj.type)
                                     {
                                         case 'FS':
-                                            if (obj.timeMs <= timeObj.timeMs)
+                                            if (timeObj.timeMs <= obj.timeMs)
                                                 return true;
                                             break;
 
                                         case 'BS':
-                                            if (obj.distanceToSplit <= timeObj.distanceToSplit)
+                                            if (timeObj.distanceToSplit <= obj.distanceToSplit)
                                                 return true;
                                             break;
 
                                         case 'LS':
-                                            if (obj.timeMs >= timeObj.timeMs)
+                                            if (timeObj.timeMs >= obj.timeMs)
                                                 return true;
                                             break;
                                     }
@@ -280,13 +280,14 @@ async function filterTimes(times, callback)
     var filteredTimes = [];
 
     for (var kk=0; kk<filteredTimesBS.length; kk++){
-        
-
+        filteredTimes.push(filteredTimesFS[kk]);
+        _.last(filteredTimes).type = 'FS';
         filteredTimes.push(filteredTimesBS[kk]);
-
         _.last(filteredTimes).type = 'BS';
+        filteredTimes.push(filteredTimesLS[kk]);
+        _.last(filteredTimes).type = 'LS';
     }
-    for (var ll=0; ll<filteredTimesFS.length; ll++){
+    /*for (var ll=0; ll<filteredTimesFS.length; ll++){
        
 
         filteredTimes.push(filteredTimesFS[ll]);
@@ -297,7 +298,7 @@ async function filterTimes(times, callback)
        
         filteredTimes.push(filteredTimesLS[nn]);
         _.last(filteredTimes).type = 'LS';
-    }
+    }*/
 
     callback(filteredTimes);
 }
