@@ -13,7 +13,7 @@ console.log(__dirname);
 
 var config = {
     'updateRaceMapTimes': 10000,
-    'raceMapEventId': '60a3b443f096f800018add7c',
+    'raceMapEventId': '60a3b443f096f800018add7c',   
     't2wApiSecretKey': '56b4508a355779c94e4e1a590fc607fb',
     'boxId': 123,
     't2wCompanyId': 7,
@@ -333,7 +333,7 @@ async function sendBbtKeepAlive()
     {
         // send for all boxes the keep alive signal
         _.forEach(db.data.timekeepings, function(value, key){
-            console.log("Splitname: " + value.name + " -> BoxId: " + value.boxId);
+            //console.log("Splitname: " + value.name + " -> BoxId: " + value.boxId);
             bbtSendKeepAlive(value.boxId, config.t2wCompanyId, config.t2wApiSecretKey, "");
         });   
         //bbtSendRawTime(config.boxId, config.companyId, config.apiSecretKey);
@@ -371,29 +371,35 @@ async function sendTimes2Server()
             // check if we found some new elements
             if (sendElem != undefined)
             {
-                var startNumber = "000000000000000000000000" + sendElem.startNumber.toString();
-                startNumber = startNumber.substring(startNumber.length - 24);
-                
-                var sendRawTime = "event.tag.";
-
-                if (sendElem.type == 'FS')
+                if (sendElem.startNumber != undefined)
                 {
-                    sendRawTime += "arrive tag_id=0x" + startNumber + ', first=' + sendElem.time.substring(0, sendElem.time.length-1);
-                } else if (sendElem.type == 'BS') {
-                    sendRawTime += "best tag_id=0x" + startNumber + ', best=' + sendElem.time.substring(0, sendElem.time.length-1);
-                } else if (sendElem.type == 'LS') {
-                    sendRawTime += "depart tag_id=0x" + startNumber + ', last=' + sendElem.time.substring(0, sendElem.time.length-1);
+                    var startNumber = "000000000000000000000000" + sendElem.startNumber.toString();
+                    startNumber = startNumber.substring(startNumber.length - 24);
+                    
+                    var sendRawTime = "event.tag.";
+
+                    if (sendElem.type == 'FS')
+                    {
+                        sendRawTime += "arrive tag_id=0x" + startNumber + ', first=' + sendElem.time.substring(0, sendElem.time.length-1);
+                    } else if (sendElem.type == 'BS') {
+                        sendRawTime += "best tag_id=0x" + startNumber + ', best=' + sendElem.time.substring(0, sendElem.time.length-1);
+                    } else if (sendElem.type == 'LS') {
+                        sendRawTime += "depart tag_id=0x" + startNumber + ', last=' + sendElem.time.substring(0, sendElem.time.length-1);
+                    } else {
+                        console.log("ERROR: wrong type. have to be FS,LS,BS");
+                        break;
+                    }
+                    
+                    var retVal = await bbtSendRawTime(sendElem.boxId, config.t2wCompanyId, config.t2wApiSecretKey, [sendRawTime]);
+
+                    if (retVal)
+                    {
+                        sendElem.send2Server = true;
+                        //console.log("SUCCESSFULL SEND " + startNumber);
+                    }
+                    
                 } else {
-                    console.log("ERROR: wrong type. have to be FS,LS,BS");
-                    break;
-                }
-                
-                var retVal = await bbtSendRawTime(sendElem.boxId, config.t2wCompanyId, config.t2wApiSecretKey, [sendRawTime]);
-
-                if (retVal)
-                {
                     sendElem.send2Server = true;
-                    //console.log("SUCCESSFULL SEND " + startNumber);
                 }
                 ii += 1;
             } else {
@@ -444,7 +450,7 @@ async function bbtSendKeepAlive(boxId, companyId, secretKey, status)
 
     if (responseData.StatusCode == 0)
     {
-        console.log('KeepAlive OK BoxId: ' + boxId);
+        //console.log('KeepAlive OK BoxId: ' + boxId);
     } else {
         console.log('KeepAlive ERROR');
         console.log(msg);
