@@ -11,16 +11,18 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 console.log(__dirname);
 
+var plotSplits = true;
+
 
 var config = {
-    'updateRaceMapTimes': 10000,
     'raceMapEventId': '60a3b443f096f800018add7c',   
     't2wApiSecretKey': '56b4508a355779c94e4e1a590fc607fb',
     'boxId': 123,
     't2wCompanyId': 7,
-    'keepAliveTime': 60000,
-    'sendTimes2ServerTime': 15000,
-    'getRaceMapDataTime': 15000,
+    'keepAliveTime': 10,
+    'sendTimes2ServerTime': 15,
+	"sendTimes2Server": 1, 
+    'getRaceMapDataTime': 15,
     'filterTime': 120
 };
 
@@ -43,17 +45,17 @@ await db.read();
 
 
 // get new times and save to db file
-setInterval(getRaceMapData, config.getRaceMapDataTime);
+setInterval(getRaceMapData, config.getRaceMapDataTime*1000);
 getRaceMapData();
 
 
 
-setInterval(sendBbtKeepAlive, config.keepAliveTime);
+setInterval(sendBbtKeepAlive, config.keepAliveTime*1000);
 sendBbtKeepAlive();
 
 if (config.sendTimes2Server == 1)
 {
-    setInterval(sendTimes2Server, config.sendTimes2ServerTime);
+    setInterval(sendTimes2Server, config.sendTimes2ServerTime*1000);
     sendTimes2Server();
 }
 
@@ -346,7 +348,22 @@ async function sendBbtKeepAlive()
 */
 async function sendTimes2Server()
 {
-	fs.writeFile('splitPoints.json', JSON.stringify(db.data.timekeepings), function(err) {
+	
+	if (plotSplits)
+	{	
+		_.forEach(db.data.timekeepings, function(value, key){
+			
+			
+			console.log("Splitname: " + value.name + " -> BoxId: " + value.boxId);
+				
+			
+			
+		});  
+		plotSplits = false;
+	}
+	
+	
+	fs.writeFile('splitPointsFull.json', JSON.stringify(db.data.timekeepings), function(err) {
         if(err) {
             return console.log(err);
         }
@@ -359,7 +376,7 @@ async function sendTimes2Server()
         var nrSendTimes = _.size(_.filter(db.data.t2wtimes, {'send2Server': false}));
         var allTimes    = _.size(db.data.t2wtimes);
 
-        console.log('Send times to server: ' + nrSendTimes +" / " + allTimes);
+        console.log('Send times to server: TO SEND ' + nrSendTimes +" | ALL " + allTimes);
 
         var ii=0;
         while (ii < 100) {          
@@ -417,7 +434,7 @@ async function sendTimes2Server()
             }
         }
 
-        console.log('Send times to server: ' + ii );
+        //console.log('Send times to server: ' + ii );
 
         await db.write();
     }
