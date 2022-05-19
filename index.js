@@ -5,6 +5,7 @@ import { join, dirname } from 'path';
 import { Low, JSONFile } from 'lowdb';
 import { fileURLToPath } from 'url';
 import _ from 'lodash';
+import fs from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -345,6 +346,14 @@ async function sendBbtKeepAlive()
 */
 async function sendTimes2Server()
 {
+	fs.writeFile('splitPoints.json', JSON.stringify(db.data.timekeepings), function(err) {
+        if(err) {
+            return console.log(err);
+        }
+
+        //console.log("The file was saved!");
+    }); 
+	
     if(_.has(db.data, 't2wtimes'))
     {
         var nrSendTimes = _.size(_.filter(db.data.t2wtimes, {'send2Server': false}));

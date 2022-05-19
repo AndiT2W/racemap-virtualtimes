@@ -1,13 +1,13 @@
 {
-    "updateRaceMapTimes": 10000,
-    "raceMapEventId": "622616d55a739e00018a727b",
+    "updateRaceMapTimes": 60000,
+    "raceMapEventId": "624ffca759912c0001703be4",
     "t2wApiSecretKey": "56b4508a355779c94e4e1a590fc607fb",
     "t2wCompanyId": 7,
     "boxId": 300,   
     "keepAliveTime": 10000,
     "sendTimes2ServerTime": 15000,
     "sendTimes2Server": 1, 
-    "getRaceMapDataTime": 30000,
+    "getRaceMapDataTime": 60000,
     "filterTime": 120,
     "addSeconds2Time": 7200
 }
