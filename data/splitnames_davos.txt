@@ -1,0 +1,23 @@
+Splitname: WZ1 -> BoxId: 300
+index.js:336
+Splitname: WZ2 -> BoxId: 301
+index.js:336
+Splitname: WZ3 -> BoxId: 302
+index.js:336
+Splitname: WZ4 (Chörbsch Horn) -> BoxId: 303
+index.js:336
+Splitname: WZ5 (Stafelalp) -> BoxId: 304
+index.js:336
+Splitname: WZ6 -> BoxId: 305
+index.js:336
+Splitname: WZ7 -> BoxId: 306
+index.js:336
+Splitname: WZ8 (Glaris) -> BoxId: 307
+index.js:336
+Splitname: WZ9 (Rinerhorn) -> BoxId: 308
+index.js:336
+Splitname: WZ10 -> BoxId: 309
+index.js:336
+Splitname: WZ11 (Jakobshorn) -> BoxId: 310
+index.js:336
+Splitname: WZ12 (Brämabüel) -> BoxId: 311

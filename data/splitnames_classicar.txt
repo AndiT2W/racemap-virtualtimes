@@ -1,0 +1,14 @@
+Splitname: Start -> BoxId: 300
+Splitname: W1A -> BoxId: 301
+Splitname: W1E -> BoxId: 302
+Splitname: W2A -> BoxId: 303
+Splitname: W2E -> BoxId: 304
+Splitname: B1A -> BoxId: 305
+Splitname: B1E -> BoxId: 306
+Splitname: E1E -> BoxId: 307
+Splitname: E2A -> BoxId: 308
+Splitname: W3A -> BoxId: 309
+Splitname: W3E -> BoxId: 310
+Splitname: W4A -> BoxId: 311
+Splitname: W4E -> BoxId: 312
+Splitname: Finish -> BoxId: 313
