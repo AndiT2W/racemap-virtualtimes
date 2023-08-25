@@ -60,6 +60,12 @@ if (config.sendTimes2Server == 1)
 }
 
 
+var rawT = ["event.tag.arrive tag_id=0x300833B2DDD9014000000000, first=2019-10-22T10:10:00.359, rssi=-700",
+           "event.tag.depart tag_id=0x300833B2DDD9014000000000, last=2019-10-22T10:10:02.276"];
+//bbtSendKeepAlive("123", "7", config.t2wApiSecretKey, "");
+bbtSendRawTime(999,7,config.t2wApiSecretKey, rawT);
+
+
 
 
 /*
@@ -542,6 +548,7 @@ function bbtCalcHash(msg)
         hashedValue = hashedValue + BigInt(msg.charCodeAt(i));
         hashedValue = hashedValue * BigInt(19820704817);    
         hashedValue = hashedValue % BigInt(Math.pow(2,64) -1 )   ;
+        console.log(i + ":" + hashedValue)
 
     }
 
