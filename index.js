@@ -548,7 +548,7 @@ function bbtCalcHash(msg)
         hashedValue = hashedValue + BigInt(msg.charCodeAt(i));
         hashedValue = hashedValue * BigInt(19820704817);    
         hashedValue = hashedValue % BigInt(Math.pow(2,64) -1 )   ;
-        console.log(i + ":" + hashedValue)
+        //console.log(i + ":" + hashedValue)
 
     }
 
